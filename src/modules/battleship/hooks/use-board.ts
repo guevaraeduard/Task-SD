@@ -6,7 +6,7 @@ import { placeRandomShips } from "../utils";
 export const BOARD_SIZE = 10;
 
 export function useBoard(
-    { placeShips }: { placeShips: boolean } = { placeShips: true },
+    { placeShips }: { placeShips: boolean } = { placeShips: false },
 ) {
     const [board, setBoard] = useState<Board>(() => {
         const empty = Array(BOARD_SIZE)
