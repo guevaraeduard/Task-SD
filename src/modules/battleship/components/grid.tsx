@@ -2,18 +2,23 @@ import { cn } from "~/modules/core/utils";
 import { type Board } from "../models/board";
 import { BOARD_SIZE } from "../hooks/use-board";
 import { BombIcon, DotIcon } from "lucide-react";
+import { type ClassValue } from "clsx";
 
 export function Grid({
+    className,
     type,
     board,
     onHit,
 }: {
+    className?: ClassValue;
     type: "player" | "enemy";
     board: Board;
     onHit?: (x: number, y: number) => void;
 }) {
     return (
-        <article className="flex w-full max-w-sm flex-col gap-4">
+        <article
+            className={cn("flex w-full max-w-sm flex-col gap-4", className)}
+        >
             <div
                 className="grid aspect-square w-full border-l border-t"
                 style={{

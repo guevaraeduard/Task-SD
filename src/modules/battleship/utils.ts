@@ -4,24 +4,72 @@ import type { Board, Point } from "./models/board";
 type Direction = "horizontal" | "vertical";
 
 /**
- * Wether is a valid placement for a ship.
+ * Wether the position has close ships.
  */
-function isValidPlacement({
+function hasCloseShips({
     board,
-    x,
-    y,
+    row,
+    column,
     length,
     direction,
 }: {
     board: Board;
-    x: number;
-    y: number;
+    row: number;
+    column: number;
     length: number;
     direction: Direction;
 }) {
+    const columns = board[row] && board[row].length;
+
+    // There's no columns in the selected row.
+    if (!columns) return false;
+
+    // Handle edge cases.
+    const minRow = Math.max(0, row - 1);
+    const minCol = Math.max(0, column - 1);
+
+    const maxRow = Math.min(
+        board.length - 1,
+        row + (direction === "horizontal" ? 1 : length),
+    );
+
+    const maxCol = Math.min(
+        columns - 1,
+        column + (direction === "vertical" ? 1 : length),
+    );
+
+    // Verify ship cells and surrounding cells.
+    for (let i = minRow; i <= maxRow; i++) {
+        for (let j = minCol; j <= maxCol; j++) {
+            if (board[i] && board[i]![j] === "ship") return true;
+        }
+    }
+
+    return false;
+}
+
+/**
+ * Wether is a valid placement for a ship.
+ */
+function isValidPlacement({
+    board,
+    row,
+    column,
+    length,
+    direction,
+}: {
+    board: Board;
+    row: number;
+    column: number;
+    length: number;
+    direction: Direction;
+}) {
+    // Ignore when has close ships (there must be space between ships).
+    if (hasCloseShips({ board, row, column, length, direction })) return false;
+
     for (let i = 0; i < length; i++) {
-        const currentX = direction === "vertical" ? x + i : x;
-        const currentY = direction === "horizontal" ? y + i : y;
+        const currentX = direction === "vertical" ? row + i : row;
+        const currentY = direction === "horizontal" ? column + i : column;
 
         if (
             !board[currentX] ||
@@ -50,16 +98,16 @@ function getRandomInt(min: number, max: number) {
  * Places a ship in the board.
  */
 function placeShip(board: Board, length: number) {
-    const x = getRandomInt(0, BOARD_SIZE);
-    const y = getRandomInt(0, BOARD_SIZE);
+    const row = getRandomInt(0, BOARD_SIZE - 1);
+    const column = getRandomInt(0, BOARD_SIZE - 1);
     const direction: Direction = getRandomInt(0, 1) ? "horizontal" : "vertical";
     const ships: Point[] = [];
 
-    if (isValidPlacement({ board, x, y, length, direction })) {
+    if (isValidPlacement({ board, row, column, length, direction })) {
         // Place the ship on the board.
         for (let i = 0; i < length; i++) {
-            const currentX = direction === "vertical" ? x + i : x;
-            const currentY = direction === "horizontal" ? y + i : y;
+            const currentX = direction === "vertical" ? row + i : row;
+            const currentY = direction === "horizontal" ? column + i : column;
 
             ships.push({
                 x: currentX,
@@ -78,12 +126,12 @@ function placeShip(board: Board, length: number) {
 /**
  * Place the ships randomly.
  */
-export function placeRandomShips(board: Board, shipsLength: number[]) {
+export function placeShipsRandomly(board: Board, shipsLength: number[]) {
     if (!shipsLength.every((length) => length > 0)) {
         throw Error("Ships length must be bigger than zero");
     }
 
-    const ships: Point[][] = [];
+    const ships: Point[] = [];
 
     shipsLength.forEach((ship) => {
         let placed = false;
@@ -92,7 +140,7 @@ export function placeRandomShips(board: Board, shipsLength: number[]) {
             const result = placeShip(board, ship);
 
             if (result.length > 0) {
-                ships.push(result);
+                ships.push(...result);
                 placed = true;
             }
         } while (!placed);
