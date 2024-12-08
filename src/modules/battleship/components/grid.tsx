@@ -1,7 +1,7 @@
 import { cn } from "~/modules/core/utils";
 import { type Board } from "../models/board";
 import { BOARD_SIZE } from "../hooks/use-board";
-import { BombIcon, DotIcon } from "lucide-react";
+import { BombIcon, CrosshairIcon, DotIcon } from "lucide-react";
 import { type ClassValue } from "clsx";
 
 export function Grid({
@@ -27,15 +27,18 @@ export function Grid({
             >
                 {board.map((cells, row) => {
                     return cells.map((cell, column) => {
+                        const canHit = cell === "empty" && type === "enemy";
+
                         return (
                             <button
                                 key={`${type}-${row}-${column}`}
                                 className={cn(
-                                    "relative border-b border-r",
+                                    "group flex aspect-square items-center justify-center border-b border-r",
                                     cell === "hit" && "bg-red-100 text-red-400",
                                     cell === "miss" &&
                                         "bg-blue-100 text-blue-400",
                                     cell === "ship" && "bg-slate-400",
+                                    canHit && "hover:bg-red-200",
                                 )}
                                 data-x={row}
                                 data-y={column}
@@ -53,19 +56,25 @@ export function Grid({
                             >
                                 {cell === "hit" ? (
                                     <BombIcon
-                                        className="absolute bottom-[25%] left-[25%] right-[25%] top-[25%]"
                                         size={18}
                                         aria-label="Tiro acertado"
                                     />
                                 ) : cell === "miss" ? (
                                     <DotIcon
-                                        className="absolute bottom-[25%] left-[25%] right-[25%] top-[25%]"
                                         size={18}
                                         aria-label="Tiro fallido"
                                     />
                                 ) : (
                                     ""
                                 )}
+
+                                {canHit ? (
+                                    <CrosshairIcon
+                                        size={18}
+                                        className="text-red-400 opacity-0 group-hover:opacity-100"
+                                        aria-label="Objetivo"
+                                    />
+                                ) : null}
                             </button>
                         );
                     });
