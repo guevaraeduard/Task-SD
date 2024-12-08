@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Point, type Board, type Cell } from "../models/board";
-import { placeShipsRandomly } from "../utils";
+import type { Point, Board, Cell } from "../models/board";
+import { generateEmptyBoard, placeShipsRandomly } from "../utils";
 
 /** The size of the board. */
 export const BOARD_SIZE = 10;
@@ -14,9 +14,7 @@ export function useBoard(
     const [ships, setShips] = useState<Point[]>([]);
 
     const [board, setBoard] = useState<Board>(() => {
-        const empty = Array(BOARD_SIZE)
-            .fill(null)
-            .map(() => Array(BOARD_SIZE).fill("empty"));
+        const empty = generateEmptyBoard();
 
         if (placeShips) {
             const result = placeShipsRandomly(empty, SHIPS);
@@ -47,5 +45,11 @@ export function useBoard(
         setBoard(update);
     };
 
-    return { board, ships, onReceiveAttack };
+    /** Clears the current board */
+    const clear = () => {
+        setBoard(generateEmptyBoard());
+        setShips([]);
+    };
+
+    return { board, ships, onReceiveAttack, clear };
 }

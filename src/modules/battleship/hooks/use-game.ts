@@ -1,33 +1,12 @@
-import { useUser } from "~/modules/core/hooks/use-user";
-import { useBoard } from "./use-board";
-import { useState } from "react";
+import { useContext } from "react";
+import { GameProviderContext } from "../context/game-provider.context";
 
-type GameStatus =
-    | "none"
-    | "searching-game"
-    | "waiting-enemy-attack"
-    | "waiting-my-attack"
-    | "win"
-    | "lose";
+export const useGame = () => {
+    const context = useContext(GameProviderContext);
 
-export function useGame() {
-    const user = useUser();
-    const myBoard = useBoard({ placeShips: true });
-    const enemyBoard = useBoard();
-    const [status, setStatus] = useState<GameStatus>("none");
+    if (!context) {
+        throw new Error("useGame must be used within a GameProvider");
+    }
 
-    // Handles the game start.
-    const onStartGame = () => {
-        console.log(`User: ${user}`);
-        console.log(myBoard.ships);
-
-        setStatus("searching-game");
-    };
-
-    // Handles attack to enemy.
-    const onSendAttack = (x: number, y: number) => {
-        console.log({ x, y });
-    };
-
-    return { myBoard, enemyBoard, status, onStartGame, onSendAttack };
-}
+    return context;
+};

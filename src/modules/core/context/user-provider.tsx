@@ -1,7 +1,6 @@
-import { createContext, useState } from "react";
+import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-
-export const UserProviderContext = createContext("");
+import { UserProviderContext } from "./user-provider.context";
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
     const [user] = useState(uuidv4());

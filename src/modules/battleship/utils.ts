@@ -151,3 +151,10 @@ export function placeShipsRandomly(board: Board, shipsLength: number[]) {
         ships,
     };
 }
+
+/** Generates an empty board. */
+export function generateEmptyBoard(): Board {
+    return Array(BOARD_SIZE)
+        .fill(null)
+        .map(() => Array(BOARD_SIZE).fill("empty"));
+}
