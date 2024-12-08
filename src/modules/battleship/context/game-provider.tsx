@@ -35,6 +35,8 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
 
     /** Handles the game start. */
     const onStartGame = () => {
+        if (socket.disconnected) return;
+
         setStatus("searching-game");
 
         // Notify join room.
@@ -43,6 +45,8 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
 
     /** Handles the attack to enemy. */
     const onSendAttack = (x: number, y: number) => {
+        if (socket.disconnected) return;
+
         console.log({ x, y });
 
         setStatus("waiting-response");
