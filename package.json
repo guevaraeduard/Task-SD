@@ -11,14 +11,16 @@
   },
   "dependencies": {
     "@fontsource-variable/dm-sans": "^5.1.0",
+    "@uidotdev/usehooks": "^2.4.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.468.0",
-    "path": "^0.12.7",
     "react": "^18.3.1",
+    "react-confetti": "^6.1.0",
     "react-dom": "^18.3.1",
     "socket.io-client": "^4.8.1",
     "tailwind-merge": "^2.5.5",
-    "uuid": "^11.0.3"
+    "uuid": "^11.0.3",
+    "valibot": "^1.0.0-beta.9"
   },
   "devDependencies": {
     "@eslint/js": "^9.15.0",

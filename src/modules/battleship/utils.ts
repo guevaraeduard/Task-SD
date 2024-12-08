@@ -1,5 +1,5 @@
 import { BOARD_SIZE } from "./hooks/use-board";
-import type { Board, Point } from "./models/board";
+import type { Board, Point, RemoteBoard } from "./models/board";
 
 type Direction = "horizontal" | "vertical";
 
@@ -157,4 +157,29 @@ export function generateEmptyBoard(): Board {
     return Array(BOARD_SIZE)
         .fill(null)
         .map(() => Array(BOARD_SIZE).fill("empty"));
+}
+
+/**
+ * Converts a local board to remote board.
+ */
+export function toRemoteBoard(board: Board): RemoteBoard {
+    const remote: RemoteBoard = [];
+
+    for (let x = 0; x < board.length; x++) {
+        for (let y = 0; y < (board[x]?.length ?? 0); y++) {
+            const cell = board[x] && board[x]![y];
+
+            if (cell) {
+                remote.push({
+                    x,
+                    y,
+                    hit: cell === "hit",
+                    miss: cell === "miss",
+                    ships: cell === "ship",
+                });
+            }
+        }
+    }
+
+    return remote;
 }

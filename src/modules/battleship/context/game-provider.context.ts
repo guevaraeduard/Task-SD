@@ -7,6 +7,7 @@ export type GameStatus =
     | "waiting-enemy-attack"
     | "waiting-my-attack"
     | "waiting-response"
+    | "waiting-game-start"
     | "win"
     | "lose";
 
@@ -14,6 +15,7 @@ interface GameProviderState {
     myBoard: Board;
     enemyBoard: Board;
     status: GameStatus;
+    message: string | null;
     onStartGame: () => void;
     onSendAttack: (x: number, y: number) => void;
     onLeaveGame: () => void;

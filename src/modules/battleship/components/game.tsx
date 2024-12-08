@@ -4,6 +4,7 @@ import { cn } from "~/modules/core/utils";
 import { AttackEnemyOverlay } from "./overlays/attack-enemy-overlay";
 import { StartGameOverlay } from "./overlays/start-game-overlay";
 import { EnemyAttackOverlay } from "./overlays/enemy-attack-overlay";
+import { WaitingGameStartOverlay } from "./overlays/waiting-game-start-overlay";
 
 export function Game() {
     const { myBoard, enemyBoard, onSendAttack, status } = useGame();
@@ -39,6 +40,10 @@ export function Game() {
 
                     if (status === "waiting-enemy-attack") {
                         return <EnemyAttackOverlay />;
+                    }
+
+                    if (status === "waiting-game-start") {
+                        return <WaitingGameStartOverlay />;
                     }
 
                     return null;
