@@ -1,5 +1,5 @@
 import { Game } from "~/modules/battleship/components/game";
-import { ResultDialog } from "~/modules/battleship/components/result-dialog";
+import { ResultOverlay } from "~/modules/battleship/components/overlays/result-overlay";
 import { useGame } from "~/modules/battleship/hooks/use-game";
 
 export function Home() {
@@ -17,7 +17,7 @@ export function Home() {
 
             {status === "win" || status === "lose" ? (
                 <div className="absolute inset-0 z-50">
-                    <ResultDialog />
+                    <ResultOverlay />
                 </div>
             ) : null}
         </div>

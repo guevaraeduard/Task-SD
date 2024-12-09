@@ -1,7 +1,7 @@
 import { Confetti } from "~/modules/core/components/confetti";
-import { useGame } from "../hooks/use-game";
+import { useGame } from "../../hooks/use-game";
 
-export function ResultDialog() {
+export function ResultOverlay() {
     const { status, message, onLeaveGame } = useGame();
 
     return (
