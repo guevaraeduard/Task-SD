@@ -19,6 +19,7 @@ interface GameProviderState {
     onStartGame: () => void;
     onSendAttack: (x: number, y: number) => void;
     onLeaveGame: () => void;
+    clear: () => void;
 }
 
 export const GameProviderContext = createContext<GameProviderState>(null!);

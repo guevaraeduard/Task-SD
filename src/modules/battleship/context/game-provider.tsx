@@ -6,7 +6,7 @@ import { GameProviderContext, type GameStatus } from "./game-provider.context";
 import { toRemoteBoard } from "../utils";
 import type { RemoteCell } from "../models/board";
 import {
-    OpponentDisconnectionSchema,
+    WinResultSchema,
     RoomReadySchema,
     ShotResultSchema,
 } from "../models/events-data";
@@ -22,6 +22,8 @@ const events = {
     joinRoom: "joinRoom",
     shot: "shot",
     cancelRoom: "cancel-room",
+    winnerGame: "winner-game",
+    lossGame: "loss-game",
 };
 
 /**
@@ -53,19 +55,27 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
             const parsed = v.safeParse(RoomReadySchema, data);
             if (!parsed.success) return;
 
-            const { room } = parsed.output;
+            const { room, players } = parsed.output;
 
-            console.log(room);
+            const table = toRemoteBoard(myBoard.board);
 
             // Send board.
             socket.emit(events.fillTable, {
-                table: toRemoteBoard(myBoard.board),
+                table,
                 room,
             });
 
             // Store game room.
             setRoom(room);
             setStatus("waiting-game-start");
+
+            const isUserTurn =
+                players.find((player) => player.name === user)?.your ?? false;
+
+            // Notify turn.
+            setStatus(
+                isUserTurn ? "waiting-my-attack" : "waiting-enemy-attack",
+            );
         };
 
         /** Handles the shot received event. */
@@ -94,29 +104,41 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
             setStatus(hit ? "waiting-my-attack" : "waiting-enemy-attack");
         };
 
-        /** Handles the shot received event. */
-        const onOpponentDisconnection = (data: unknown) => {
+        /** Handles the user victory. */
+        const onVictory = (data: unknown) => {
             // Mark as win.
+            setRoom(null);
             setStatus("win");
 
-            const parsed = v.safeParse(OpponentDisconnectionSchema, data);
+            const parsed = v.safeParse(WinResultSchema, data);
             if (!parsed.success) return;
 
             // Save socket message.
             setMessage(parsed.output.message);
         };
 
+        /** Handles the user loss. */
+        const onLoss = () => {
+            setMessage(null);
+            setRoom(null);
+            setStatus("lose");
+        };
+
         // The events.
         socket.on(events.roomReady, onRoomReady);
         socket.on(events.shotReceived, onShotReceived);
         socket.on(events.shotSend, onShotSent);
-        socket.on(events.opponentDisconnected, onOpponentDisconnection);
+        socket.on(events.opponentDisconnected, onVictory);
+        socket.on(events.winnerGame, onVictory);
+        socket.on(events.lossGame, onLoss);
 
         return () => {
             socket.off(events.roomReady);
             socket.off(events.shotReceived);
             socket.off(events.shotSend);
             socket.off(events.opponentDisconnected);
+            socket.off(events.winnerGame);
+            socket.off(events.lossGame);
         };
     }, [myBoard, enemyBoard, user]);
 
@@ -151,9 +173,18 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
         if (socket.disconnected) return;
 
         socket.emit(events.cancelRoom, { playerName: user });
-        setStatus("none");
 
-        // Clears the enemy board.
+        clear();
+    };
+
+    /** Clears the game. */
+    const clear = () => {
+        setStatus("none");
+        setRoom(null);
+        setMessage(null);
+
+        // Clears boards.
+        myBoard.clearAttacksReceived();
         enemyBoard.clear();
     };
 
@@ -167,6 +198,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
                 onStartGame,
                 onSendAttack,
                 onLeaveGame,
+                clear,
             }}
         >
             {children}

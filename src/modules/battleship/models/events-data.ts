@@ -2,6 +2,12 @@ import * as v from "valibot";
 
 export const RoomReadySchema = v.object({
     room: v.string(),
+    players: v.array(
+        v.object({
+            name: v.string(),
+            your: v.boolean(),
+        }),
+    ),
 });
 
 export const ShotResultSchema = v.object({
@@ -10,6 +16,6 @@ export const ShotResultSchema = v.object({
     hit: v.boolean(),
 });
 
-export const OpponentDisconnectionSchema = v.object({
+export const WinResultSchema = v.object({
     message: v.string(),
 });

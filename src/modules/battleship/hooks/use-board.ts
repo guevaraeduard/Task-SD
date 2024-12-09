@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { Point, Board, Cell } from "../models/board";
+import type { Board, Cell } from "../models/board";
 import { generateEmptyBoard, placeShipsRandomly } from "../utils";
 
 /** The size of the board. */
@@ -11,18 +11,14 @@ const SHIPS = [5, 4, 4, 3, 2, 2, 1];
 export function useBoard(
     { placeShips }: { placeShips: boolean } = { placeShips: false },
 ) {
-    const [ships, setShips] = useState<Point[]>([]);
-
     const [board, setBoard] = useState<Board>(() => {
-        const empty = generateEmptyBoard();
-
         if (placeShips) {
-            const result = placeShipsRandomly(empty, SHIPS);
-            setShips(result.ships);
+            const result = placeShipsRandomly(SHIPS);
+
             return result.board;
         }
 
-        return empty;
+        return generateEmptyBoard();
     });
 
     /**  Handles the on receive attack. */
@@ -48,8 +44,20 @@ export function useBoard(
     /** Clears the current board */
     const clear = () => {
         setBoard(generateEmptyBoard());
-        setShips([]);
     };
 
-    return { board, ships, onReceiveAttack, clear };
+    /** Clears the attacks received. */
+    const clearAttacksReceived = () => {
+        setBoard((board) => {
+            return board.map((row) => {
+                return row.map((column) => {
+                    if (column === "hit" || column === "ship") return "ship";
+
+                    return "empty";
+                });
+            });
+        });
+    };
+
+    return { board, onReceiveAttack, clear, clearAttacksReceived };
 }

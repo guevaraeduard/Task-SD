@@ -6,7 +6,7 @@ export function ResultDialog() {
 
     return (
         <>
-            <div className="grid h-full w-full place-items-center bg-slate-900/50">
+            <div className="grid h-full w-full place-items-center bg-slate-900/50 px-4">
                 <div className="flex w-full max-w-md flex-col items-center justify-center gap-6 rounded-md bg-white p-6">
                     <div className="flex flex-col gap-4 text-center">
                         <h1 className="text-2xl font-bold">

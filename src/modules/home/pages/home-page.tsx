@@ -7,7 +7,7 @@ export function Home() {
 
     return (
         <div className="relative flex min-h-dvh flex-col">
-            <header className="sticky top-0 z-10 border-b bg-white px-6 py-4 text-center">
+            <header className="sticky top-0 z-20 border-b bg-white px-6 py-4 text-center">
                 <h1 className="text-2xl font-bold">Battleship</h1>
             </header>
 

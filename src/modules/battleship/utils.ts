@@ -74,7 +74,7 @@ function isValidPlacement({
         if (
             !board[currentX] ||
             !board[currentX][currentY] ||
-            board[currentX][currentX] === "ship"
+            board[currentX][currentY] === "ship"
         ) {
             return false;
         }
@@ -126,14 +126,15 @@ function placeShip(board: Board, length: number) {
 /**
  * Place the ships randomly.
  */
-export function placeShipsRandomly(board: Board, shipsLength: number[]) {
+export function placeShipsRandomly(shipsLength: number[]) {
     if (!shipsLength.every((length) => length > 0)) {
         throw Error("Ships length must be bigger than zero");
     }
 
+    const board = generateEmptyBoard();
     const ships: Point[] = [];
 
-    shipsLength.forEach((ship) => {
+    for (const ship of shipsLength) {
         let placed = false;
 
         do {
@@ -144,7 +145,7 @@ export function placeShipsRandomly(board: Board, shipsLength: number[]) {
                 placed = true;
             }
         } while (!placed);
-    });
+    }
 
     return {
         board,
@@ -166,7 +167,9 @@ export function toRemoteBoard(board: Board): RemoteBoard {
     const remote: RemoteBoard = [];
 
     for (let x = 0; x < board.length; x++) {
-        for (let y = 0; y < (board[x]?.length ?? 0); y++) {
+        const columns = (board[x] && board[x]?.length) ?? 0;
+
+        for (let y = 0; y < columns; y++) {
             const cell = board[x] && board[x]![y];
 
             if (cell) {
